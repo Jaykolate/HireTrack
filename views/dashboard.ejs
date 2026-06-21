@@ -1,0 +1,81 @@
+<h1>Dashboard</h1>
+
+<div class="stats-grid">
+  <div class="stat-card stat-total">
+    <div class="stat-icon">📋</div>
+    <div>
+      <p class="stat-label">Total applications</p>
+      <p class="stat-value"><%= total %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-applied">
+    <div class="stat-icon">📨</div>
+    <div>
+      <p class="stat-label">Applied</p>
+      <p class="stat-value"><%= stats.Applied %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-interview">
+    <div class="stat-icon">🎤</div>
+    <div>
+      <p class="stat-label">Interview</p>
+      <p class="stat-value"><%= stats.Interview %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-offer">
+    <div class="stat-icon">🎉</div>
+    <div>
+      <p class="stat-label">Offers</p>
+      <p class="stat-value"><%= stats.Offer %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-rejected">
+    <div class="stat-icon">✖️</div>
+    <div>
+      <p class="stat-label">Rejected</p>
+      <p class="stat-value"><%= stats.Rejected %></p>
+    </div>
+  </div>
+</div>
+
+<div class="table-header">
+  <h2>Applications</h2>
+  <a href="/applications/new" class="btn">+ Add new</a>
+</div>
+
+<% if (applications.length === 0) { %>
+  <div class="empty-state">
+    <div class="empty-state-icon">📂</div>
+    <p class="empty-state-title">No applications yet</p>
+    <p class="empty-state-text">Start tracking your job search by adding your first application.</p>
+    <a href="/applications/new" class="btn">+ Add your first application</a>
+  </div>
+<% } else { %>
+<table class="app-table">
+  <thead>
+    <tr>
+      <th>Company</th>
+      <th>Role</th>
+      <th>Applied date</th>
+      <th>Status</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% applications.forEach(app => { %>
+      <tr>
+        <td><%= app.company_name %></td>
+        <td><%= app.role_title %></td>
+        <td><%= new Date(app.applied_date).toLocaleDateString() %></td>
+        <td><span class="badge badge-<%= app.status.toLowerCase() %>"><%= app.status %></span></td>
+        <td class="actions">
+          <a href="/applications/<%= app.id %>">Edit</a>
+          <form action="/applications/<%= app.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this application?')">
+            <button type="submit" class="link-btn">Delete</button>
+          </form>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+<% } %>

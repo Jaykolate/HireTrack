@@ -1,0 +1,32 @@
+<h1>Add new application</h1>
+
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="form-errors">
+    <% errors.forEach(err => { %>
+      <p class="form-error"><%= err %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+<form action="/applications" method="POST" class="app-form">
+  <label for="company_name">Company name</label>
+  <input type="text" id="company_name" name="company_name" value="<%= typeof formData !== 'undefined' ? formData.company_name || '' : '' %>" required>
+
+  <label for="role_title">Role</label>
+  <input type="text" id="role_title" name="role_title" value="<%= typeof formData !== 'undefined' ? formData.role_title || '' : '' %>" required>
+
+  <label for="status">Status</label>
+  <select id="status" name="status" required>
+    <% ['Applied', 'Interview', 'Offer', 'Rejected'].forEach(s => { %>
+      <option value="<%= s %>" <%= (typeof formData !== 'undefined' && formData.status === s) ? 'selected' : '' %>><%= s %></option>
+    <% }) %>
+  </select>
+
+  <label for="applied_date">Applied date</label>
+  <input type="date" id="applied_date" name="applied_date" value="<%= typeof formData !== 'undefined' ? formData.applied_date || '' : '' %>" required>
+
+  <label for="notes">Notes</label>
+  <textarea id="notes" name="notes" rows="3"><%= typeof formData !== 'undefined' ? formData.notes || '' : '' %></textarea>
+
+  <button type="submit" class="btn">Save application</button>
+</form>

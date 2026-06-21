@@ -1,0 +1,291 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, "Segoe UI", Arial, sans-serif;
+  background: #f5f6fa;
+  color: #1a1a1a;
+}
+
+/* Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 32px;
+  background: #1f2937;
+  color: #fff;
+}
+
+.logo {
+  color: #fff;
+  font-size: 20px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.nav-links a {
+  color: #d1d5db;
+  text-decoration: none;
+  margin-left: 24px;
+  font-size: 14px;
+}
+
+.nav-links a:hover {
+  color: #fff;
+}
+
+/* Container */
+.container {
+  max-width: 1000px;
+  margin: 32px auto;
+  padding: 0 20px;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 18px;
+}
+
+/* Stats grid */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.stat-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-bottom: 6px;
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 600;
+}
+
+/* Table */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.app-table th, .app-table td {
+  text-align: left;
+  padding: 12px 16px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+}
+
+.app-table th {
+  background: #f9fafb;
+  color: #6b7280;
+  font-weight: 500;
+  font-size: 13px;
+}
+
+.app-table tr:last-child td {
+  border-bottom: none;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.actions a, .link-btn {
+  color: #2563eb;
+  text-decoration: none;
+  font-size: 13px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.link-btn:hover, .actions a:hover {
+  text-decoration: underline;
+}
+
+/* Status badges */
+.badge {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-weight: 500;
+}
+
+.badge-applied { background: #e5e7eb; color: #374151; }
+.badge-interview { background: #dbeafe; color: #1d4ed8; }
+.badge-offer { background: #dcfce7; color: #15803d; }
+.badge-rejected { background: #fee2e2; color: #b91c1c; }
+
+/* Buttons */
+.btn {
+  background: #2563eb;
+  color: #fff;
+  text-decoration: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background: #1d4ed8;
+}
+
+/* Forms */
+.app-form {
+  background: #fff;
+  border-radius: 10px;
+  padding: 24px;
+  max-width: 480px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.app-form label {
+  font-size: 13px;
+  color: #6b7280;
+  margin-top: 12px;
+}
+
+.app-form input, .app-form select, .app-form textarea {
+  padding: 9px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.app-form .btn {
+  margin-top: 20px;
+  align-self: flex-start;
+}
+
+/* Navbar user & sign-out */
+.nav-user {
+  color: #d1d5db;
+  font-size: 14px;
+  margin-left: 24px;
+}
+
+.nav-sign-out {
+  background: none;
+  border: 1px solid #4b5563;
+  color: #d1d5db;
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  margin-left: 12px;
+  cursor: pointer;
+}
+
+.nav-sign-out:hover {
+  background: #374151;
+  color: #fff;
+}
+
+/* Navbar auth links (Login / Sign up) */
+.nav-auth-link {
+  color: #d1d5db;
+  text-decoration: none;
+  margin-left: 24px;
+  font-size: 14px;
+}
+
+.nav-auth-link:hover {
+  color: #fff;
+}
+
+.nav-auth-btn {
+  background: #2563eb;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  margin-left: 12px;
+}
+
+.nav-auth-btn:hover {
+  background: #1d4ed8;
+}
+
+/* Empty state */
+.empty-state {
+  background: #fff;
+  border-radius: 10px;
+  padding: 48px 24px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+.empty-state-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 6px;
+}
+
+.empty-state-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 20px;
+}
+
+/* Form validation errors */
+.form-errors {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-bottom: 16px;
+  max-width: 480px;
+}
+
+.form-error {
+  color: #b91c1c;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.form-error:last-child {
+  margin-bottom: 0;
+}

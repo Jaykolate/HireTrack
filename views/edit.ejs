@@ -1,0 +1,41 @@
+<h1>Edit application</h1>
+
+<% if (typeof errors !== 'undefined' && errors.length > 0) { %>
+  <div class="form-errors">
+    <% errors.forEach(err => { %>
+      <p class="form-error"><%= err %></p>
+    <% }) %>
+  </div>
+<% } %>
+
+<%
+  // Use formData if re-rendering after validation failure, otherwise use the DB record
+  var fd = (typeof formData !== 'undefined') ? formData : application;
+  var dateVal = '';
+  if (fd.applied_date) {
+    dateVal = (fd.applied_date instanceof Date) ? fd.applied_date.toISOString().split('T')[0] : fd.applied_date;
+  }
+%>
+
+<form action="/applications/<%= application.id %>?_method=PUT" method="POST" class="app-form">
+  <label for="company_name">Company name</label>
+  <input type="text" id="company_name" name="company_name" value="<%= fd.company_name %>" required>
+
+  <label for="role_title">Role</label>
+  <input type="text" id="role_title" name="role_title" value="<%= fd.role_title %>" required>
+
+  <label for="status">Status</label>
+  <select id="status" name="status" required>
+    <% ['Applied', 'Interview', 'Offer', 'Rejected'].forEach(s => { %>
+      <option value="<%= s %>" <%= fd.status === s ? 'selected' : '' %>><%= s %></option>
+    <% }) %>
+  </select>
+
+  <label for="applied_date">Applied date</label>
+  <input type="date" id="applied_date" name="applied_date" value="<%= dateVal %>" required>
+
+  <label for="notes">Notes</label>
+  <textarea id="notes" name="notes" rows="3"><%= fd.notes || '' %></textarea>
+
+  <button type="submit" class="btn">Update application</button>
+</form>
