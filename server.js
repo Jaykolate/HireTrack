@@ -82,3 +82,5 @@ app.use((req, res) => res.status(404).send('Page not found'));
 app.listen(PORT, () => {
   console.log(`HireTrack running on http://localhost:${PORT}`);
 });
+
+module.exports = app;
