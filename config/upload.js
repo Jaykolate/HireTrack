@@ -2,10 +2,19 @@
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
+const os = require('os');
 
-// Ensure uploads directory exists
-const uploadDir = path.join(__dirname, '..', 'public', 'uploads', 'resumes');
-fs.mkdirSync(uploadDir, { recursive: true });
+// Use /tmp on Vercel (read-only filesystem), local uploads dir otherwise
+const isVercel = process.env.VERCEL === '1';
+const uploadDir = isVercel
+  ? path.join(os.tmpdir(), 'uploads', 'resumes')
+  : path.join(__dirname, '..', 'public', 'uploads', 'resumes');
+
+try {
+  fs.mkdirSync(uploadDir, { recursive: true });
+} catch (err) {
+  console.error('Could not create upload dir:', err.message);
+}
 
 // Save files to disk with unique names
 const storage = multer.diskStorage({
