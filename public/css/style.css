@@ -27,6 +27,12 @@ body {
   text-decoration: none;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
 .nav-links a {
   color: #d1d5db;
   text-decoration: none;
@@ -34,8 +40,55 @@ body {
   font-size: 14px;
 }
 
-.nav-links a:hover {
+/* Navbar user & sign-out */
+.nav-user-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-left: 16px;
+}
+
+.nav-user {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+.nav-sign-out {
+  background: none;
+  border: 1px solid #4b5563;
+  color: #d1d5db;
+  font-size: 13px;
+  padding: 5px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Navbar Login & Sign Up */
+.nav-login-btn {
+  display: inline-flex;
+  align-items: center;
   color: #fff;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid #4b5563;
+  margin-left: 16px;
+}
+
+.nav-signup-btn {
+  display: inline-flex;
+  align-items: center;
+  background: #2563eb;
+  color: #fff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 500;
+  padding: 6px 14px;
+  border-radius: 6px;
+  margin-left: 8px;
 }
 
 /* Container */
@@ -128,10 +181,7 @@ h2 {
   border: none;
   cursor: pointer;
   padding: 0;
-}
-
-.link-btn:hover, .actions a:hover {
-  text-decoration: underline;
+  font-family: inherit;
 }
 
 /* Status badges */
@@ -157,10 +207,9 @@ h2 {
   font-size: 14px;
   border: none;
   cursor: pointer;
-}
-
-.btn:hover {
-  background: #1d4ed8;
+  font-family: inherit;
+  display: inline-flex;
+  align-items: center;
 }
 
 /* Forms */
@@ -194,55 +243,6 @@ h2 {
   align-self: flex-start;
 }
 
-/* Navbar user & sign-out */
-.nav-user {
-  color: #d1d5db;
-  font-size: 14px;
-  margin-left: 24px;
-}
-
-.nav-sign-out {
-  background: none;
-  border: 1px solid #4b5563;
-  color: #d1d5db;
-  font-size: 13px;
-  padding: 5px 12px;
-  border-radius: 6px;
-  margin-left: 12px;
-  cursor: pointer;
-}
-
-.nav-sign-out:hover {
-  background: #374151;
-  color: #fff;
-}
-
-/* Navbar auth links (Login / Sign up) */
-.nav-auth-link {
-  color: #d1d5db;
-  text-decoration: none;
-  margin-left: 24px;
-  font-size: 14px;
-}
-
-.nav-auth-link:hover {
-  color: #fff;
-}
-
-.nav-auth-btn {
-  background: #2563eb;
-  color: #fff;
-  text-decoration: none;
-  font-size: 13px;
-  padding: 6px 14px;
-  border-radius: 6px;
-  margin-left: 12px;
-}
-
-.nav-auth-btn:hover {
-  background: #1d4ed8;
-}
-
 /* Empty state */
 .empty-state {
   background: #fff;
@@ -250,11 +250,6 @@ h2 {
   padding: 48px 24px;
   box-shadow: 0 1px 3px rgba(0,0,0,0.08);
   text-align: center;
-}
-
-.empty-state-icon {
-  font-size: 48px;
-  margin-bottom: 12px;
 }
 
 .empty-state-title {
@@ -288,4 +283,712 @@ h2 {
 
 .form-error:last-child {
   margin-bottom: 0;
+}
+
+/* File Upload Zone */
+.file-upload-zone {
+  border: 2px dashed #d1d5db;
+  border-radius: 10px;
+  padding: 28px 20px;
+  text-align: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.file-upload-input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.file-upload-text {
+  font-size: 14px;
+  color: #374151;
+  margin-bottom: 4px;
+}
+
+.file-upload-link {
+  color: #2563eb;
+  font-weight: 500;
+  text-decoration: underline;
+}
+
+.file-upload-hint {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+/* File preview */
+.file-preview {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f0f9ff;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+
+.file-preview-name {
+  font-size: 13px;
+  color: #1e40af;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-preview-remove {
+  background: none;
+  border: none;
+  color: #6b7280;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* Current resume (edit form) */
+.current-resume {
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 8px;
+}
+
+.current-resume-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.current-resume-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #166534;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-link {
+  font-size: 12px;
+  color: #2563eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.remove-resume-label {
+  font-size: 12px;
+  color: #6b7280;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.remove-resume-label input {
+  accent-color: #dc2626;
+}
+
+/* Details Page */
+.details-page {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.back-link {
+  display: inline-block;
+  color: #6b7280;
+  text-decoration: none;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+
+.details-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px 32px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+
+.details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #f3f4f6;
+}
+
+.details-company {
+  font-size: 22px;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 4px;
+}
+
+.details-role {
+  font-size: 15px;
+  color: #6b7280;
+}
+
+.badge-lg {
+  font-size: 13px;
+  padding: 6px 14px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.details-item-full {
+  grid-column: 1 / -1;
+}
+
+.details-label {
+  display: block;
+  font-size: 12px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.details-value {
+  font-size: 15px;
+  color: #111827;
+}
+
+/* Resume section on details */
+.details-resume-section {
+  margin-bottom: 28px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+}
+
+.details-section-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 14px;
+}
+
+.resume-card {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 18px 20px;
+}
+
+.resume-card-icon {
+  font-size: 36px;
+  flex-shrink: 0;
+}
+
+.resume-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.resume-card-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1e293b;
+  margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resume-card-date {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.resume-card-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+/* No resume state */
+.no-resume {
+  text-align: center;
+  padding: 28px;
+  background: #f9fafb;
+  border: 1px dashed #d1d5db;
+  border-radius: 10px;
+}
+
+.no-resume-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 14px;
+}
+
+/* Button variants */
+.btn-outline {
+  background: transparent;
+  color: #2563eb;
+  border: 1px solid #2563eb;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #fff;
+  border: none;
+  padding: 9px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 13px;
+}
+
+.btn-icon {
+  margin-right: 4px;
+}
+
+/* Details page actions */
+.details-actions {
+  display: flex;
+  gap: 10px;
+  padding-top: 20px;
+  border-top: 1px solid #f3f4f6;
+}
+
+/* Resume indicator in dashboard table */
+.resume-indicator {
+  text-decoration: none;
+  font-size: 18px;
+  display: inline-block;
+}
+
+.resume-none {
+  color: #d1d5db;
+  font-size: 14px;
+}
+
+/* Login Warning Modal */
+.login-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.login-modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.login-modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 32px 28px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+}
+
+.login-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  background: none;
+  border: none;
+  color: #9ca3af;
+  font-size: 22px;
+  cursor: pointer;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+}
+
+.login-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.login-modal-text {
+  font-size: 14px;
+  color: #6b7280;
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+
+.login-modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.login-modal-btn-primary {
+  padding: 10px 20px;
+  font-size: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+.login-modal-btn-secondary {
+  padding: 10px 20px;
+  font-size: 14px;
+  width: 100%;
+  justify-content: center;
+}
+
+/* ========================================
+   Hamburger Toggle (hidden on desktop)
+   ======================================== */
+.nav-toggle {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.nav-toggle span {
+  display: block;
+  width: 22px;
+  height: 2px;
+  background: #d1d5db;
+  border-radius: 2px;
+  transition: transform 0.2s, opacity 0.2s;
+}
+
+.nav-toggle.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.nav-toggle.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.nav-toggle.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* ========================================
+   Mobile table → card layout
+   ======================================== */
+.mobile-label {
+  display: none;
+}
+
+/* ========================================
+   Responsive – Tablet (max 768px)
+   ======================================== */
+@media (max-width: 768px) {
+  .container {
+    margin: 20px auto;
+    padding: 0 16px;
+  }
+
+  h1 {
+    font-size: 20px;
+    margin-bottom: 16px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .stat-card {
+    padding: 14px 16px;
+  }
+
+  .stat-value {
+    font-size: 22px;
+  }
+
+  .details-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .details-header {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .details-card {
+    padding: 20px;
+  }
+
+  .resume-card {
+    flex-direction: column;
+    text-align: center;
+    gap: 12px;
+  }
+
+  .resume-card-actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .resume-card-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .details-actions {
+    flex-direction: column;
+  }
+
+  .details-actions .btn,
+  .details-actions button {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+  }
+
+  .app-form {
+    max-width: 100%;
+  }
+
+  .form-errors {
+    max-width: 100%;
+  }
+}
+
+/* ========================================
+   Responsive – Mobile (max 640px)
+   ======================================== */
+@media (max-width: 640px) {
+  /* Navbar: hamburger menu */
+  .nav-toggle {
+    display: flex;
+  }
+
+  .navbar {
+    padding: 12px 16px;
+    flex-wrap: wrap;
+  }
+
+  .nav-links {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    gap: 0;
+    padding-top: 12px;
+    border-top: 1px solid #374151;
+    margin-top: 10px;
+  }
+
+  .nav-links.open {
+    display: flex;
+  }
+
+  .nav-links a {
+    margin-left: 0;
+    padding: 10px 0;
+    border-bottom: 1px solid #2d3748;
+    font-size: 15px;
+  }
+
+  .nav-links a:last-child {
+    border-bottom: none;
+  }
+
+  .nav-login-btn {
+    margin-left: 0;
+    justify-content: center;
+    padding: 10px 0;
+    border: none;
+    border-bottom: 1px solid #2d3748;
+    border-radius: 0;
+  }
+
+  .nav-signup-btn {
+    margin-left: 0;
+    justify-content: center;
+    margin-top: 8px;
+    padding: 10px 0;
+    border-radius: 6px;
+  }
+
+  .nav-user-section {
+    margin-left: 0;
+    width: 100%;
+    justify-content: space-between;
+    padding: 10px 0 0;
+  }
+
+  /* Stats: 2-column on small, single column on very small */
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+
+  .stat-card {
+    padding: 12px 14px;
+    border-radius: 8px;
+  }
+
+  .stat-label {
+    font-size: 12px;
+  }
+
+  .stat-value {
+    font-size: 20px;
+  }
+
+  /* Table → cards on mobile */
+  .app-table thead {
+    display: none;
+  }
+
+  .app-table,
+  .app-table tbody,
+  .app-table tr,
+  .app-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .app-table {
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .app-table tr {
+    background: #fff;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    padding: 14px 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+  }
+
+  .app-table td {
+    padding: 4px 0;
+    border-bottom: none;
+    font-size: 14px;
+  }
+
+  .app-table td:before {
+    content: attr(data-label);
+    font-size: 12px;
+    color: #6b7280;
+    display: block;
+    margin-bottom: 2px;
+  }
+
+  .actions {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f3f4f6;
+  }
+
+  /* Table header */
+  .table-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .table-header .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Empty state */
+  .empty-state {
+    padding: 32px 16px;
+  }
+
+  .empty-state .btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Forms */
+  .app-form {
+    padding: 18px 16px;
+    border-radius: 8px;
+  }
+
+  .app-form .btn {
+    width: 100%;
+    justify-content: center;
+    align-self: stretch;
+  }
+
+  .file-upload-zone {
+    padding: 20px 14px;
+  }
+
+  /* Details page */
+  .details-card {
+    padding: 16px;
+    border-radius: 8px;
+  }
+
+  .details-company {
+    font-size: 18px;
+  }
+
+  /* Login modal */
+  .login-modal {
+    padding: 24px 18px;
+    border-radius: 10px;
+    width: 94%;
+  }
+}
+
+/* ========================================
+   Responsive – Very small (max 380px)
+   ======================================== */
+@media (max-width: 380px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding: 0 12px;
+    margin: 14px auto;
+  }
+
+  .navbar {
+    padding: 10px 12px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+  }
 }

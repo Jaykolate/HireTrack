@@ -1,0 +1,73 @@
+<div class="details-page">
+  <a href="/" class="back-link">← Back to Dashboard</a>
+
+  <div class="details-card">
+    <div class="details-header">
+      <div>
+        <h1 class="details-company"><%= application.company_name %></h1>
+        <p class="details-role"><%= application.role_title %></p>
+      </div>
+      <span class="badge badge-<%= application.status.toLowerCase() %> badge-lg"><%= application.status %></span>
+    </div>
+
+    <div class="details-grid">
+      <div class="details-item">
+        <span class="details-label">Company</span>
+        <span class="details-value"><%= application.company_name %></span>
+      </div>
+      <div class="details-item">
+        <span class="details-label">Role</span>
+        <span class="details-value"><%= application.role_title %></span>
+      </div>
+      <div class="details-item">
+        <span class="details-label">Status</span>
+        <span class="details-value"><span class="badge badge-<%= application.status.toLowerCase() %>"><%= application.status %></span></span>
+      </div>
+      <div class="details-item">
+        <span class="details-label">Applied On</span>
+        <span class="details-value"><%= new Date(application.applied_date).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></span>
+      </div>
+      <% if (application.notes) { %>
+      <div class="details-item details-item-full">
+        <span class="details-label">Notes</span>
+        <span class="details-value"><%= application.notes %></span>
+      </div>
+      <% } %>
+    </div>
+
+    <!-- Resume Section -->
+    <div class="details-resume-section">
+      <h2 class="details-section-title">Resume</h2>
+      <% if (application.resume_file_url) { %>
+        <div class="resume-card">
+          <div class="resume-card-icon">📄</div>
+          <div class="resume-card-info">
+            <p class="resume-card-name"><%= application.resume_file_name %></p>
+            <p class="resume-card-date">Uploaded on <%= new Date(application.resume_uploaded_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+          </div>
+          <div class="resume-card-actions">
+            <a href="<%= application.resume_file_url %>" target="_blank" class="btn btn-outline" id="view-resume-btn">
+              <span class="btn-icon">👁</span> View Resume
+            </a>
+            <a href="<%= application.resume_file_url %>" download="<%= application.resume_file_name %>" class="btn" id="download-resume-btn">
+              <span class="btn-icon">⬇</span> Download Resume
+            </a>
+          </div>
+        </div>
+      <% } else { %>
+        <div class="no-resume">
+          <div class="no-resume-icon">📂</div>
+          <p class="no-resume-text">No resume attached to this application.</p>
+          <a href="/applications/<%= application.id %>" class="btn btn-outline btn-sm">Attach Resume</a>
+        </div>
+      <% } %>
+    </div>
+
+    <div class="details-actions">
+      <a href="/applications/<%= application.id %>" class="btn btn-outline" id="edit-application-btn">✏️ Edit Application</a>
+      <form action="/applications/<%= application.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this application?')" style="display:inline;">
+        <button type="submit" class="btn btn-danger" id="delete-application-btn">🗑️ Delete</button>
+      </form>
+    </div>
+  </div>
+</div>

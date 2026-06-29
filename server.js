@@ -62,6 +62,21 @@ app.use('/', applicationRoutes);
 
 
 
+const multer = require('multer');
+
+// Handle Multer file-upload errors globally
+app.use((err, req, res, next) => {
+  if (err instanceof multer.MulterError) {
+    let message = 'File upload error.';
+    if (err.code === 'LIMIT_FILE_SIZE') message = 'File is too large. Maximum size is 5 MB.';
+    return res.status(400).render('add', { errors: [message], formData: req.body || {} });
+  }
+  if (err && err.message === 'Only PDF files are allowed.') {
+    return res.status(400).render('add', { errors: [err.message], formData: req.body || {} });
+  }
+  next(err);
+});
+
 app.use((req, res) => res.status(404).send('Page not found'));
 
 app.listen(PORT, () => {

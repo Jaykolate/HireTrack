@@ -8,7 +8,7 @@
   </div>
 <% } %>
 
-<form action="/applications" method="POST" class="app-form">
+<form action="/applications" method="POST" enctype="multipart/form-data" class="app-form">
   <label for="company_name">Company name</label>
   <input type="text" id="company_name" name="company_name" value="<%= typeof formData !== 'undefined' ? formData.company_name || '' : '' %>" required>
 
@@ -28,5 +28,67 @@
   <label for="notes">Notes</label>
   <textarea id="notes" name="notes" rows="3"><%= typeof formData !== 'undefined' ? formData.notes || '' : '' %></textarea>
 
+  <label for="resume">Resume (PDF, optional)</label>
+  <div class="file-upload-zone" id="upload-zone">
+    <div class="file-upload-content">
+      <div class="file-upload-icon">📄</div>
+      <p class="file-upload-text">Drag & drop your resume here or <span class="file-upload-link">browse files</span></p>
+      <p class="file-upload-hint">PDF only · Max 5 MB</p>
+    </div>
+    <input type="file" id="resume" name="resume" accept=".pdf,application/pdf" class="file-upload-input">
+  </div>
+  <div class="file-preview" id="file-preview" style="display:none;">
+    <span class="file-preview-icon">📎</span>
+    <span class="file-preview-name" id="file-name"></span>
+    <button type="button" class="file-preview-remove" id="file-remove" title="Remove file">✕</button>
+  </div>
+
   <button type="submit" class="btn">Save application</button>
 </form>
+
+<script>
+  (function() {
+    var zone = document.getElementById('upload-zone');
+    var input = document.getElementById('resume');
+    var preview = document.getElementById('file-preview');
+    var nameEl = document.getElementById('file-name');
+    var removeBtn = document.getElementById('file-remove');
+
+    // Click to browse
+    zone.addEventListener('click', function() { input.click(); });
+
+    // Drag & drop visual feedback
+    zone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', function() {
+      zone.classList.remove('drag-over');
+    });
+    zone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      if (e.dataTransfer.files.length) {
+        input.files = e.dataTransfer.files;
+        showPreview(e.dataTransfer.files[0]);
+      }
+    });
+
+    // File selected via input
+    input.addEventListener('change', function() {
+      if (input.files.length) showPreview(input.files[0]);
+    });
+
+    function showPreview(file) {
+      nameEl.textContent = file.name + ' (' + (file.size / 1024).toFixed(1) + ' KB)';
+      zone.style.display = 'none';
+      preview.style.display = 'flex';
+    }
+
+    removeBtn.addEventListener('click', function() {
+      input.value = '';
+      zone.style.display = '';
+      preview.style.display = 'none';
+    });
+  })();
+</script>

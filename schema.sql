@@ -10,6 +10,9 @@ CREATE TABLE applications (
   status ENUM('Applied', 'Interview', 'Offer', 'Rejected') DEFAULT 'Applied',
   applied_date DATE NOT NULL,
   notes TEXT,
+  resume_file_name VARCHAR(255) DEFAULT NULL,
+  resume_file_url VARCHAR(500) DEFAULT NULL,
+  resume_uploaded_at TIMESTAMP NULL DEFAULT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   INDEX idx_user_id (user_id)

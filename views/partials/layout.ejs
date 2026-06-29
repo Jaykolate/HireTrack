@@ -9,15 +9,20 @@
 <body>
   <nav class="navbar">
     <a href="/" class="logo">HireTrack</a>
-    <div class="nav-links">
+    <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="nav-links" id="navLinks">
       <a href="/">Dashboard</a>
       <% if (typeof userName !== 'undefined' && userName) { %>
         <a href="/applications/new">Add new</a>
-        <span class="nav-user"><%= userName %></span>
-        <button id="sign-out-btn" class="nav-sign-out">Sign out</button>
+        <div class="nav-user-section">
+          <span class="nav-user"><%= userName %></span>
+          <button id="sign-out-btn" class="nav-sign-out">Sign out</button>
+        </div>
       <% } else { %>
-        <a href="/sign-in" class="nav-auth-link">Login</a>
-        <a href="/sign-up" class="nav-auth-btn">Sign up</a>
+        <a href="/sign-in" class="nav-login-btn">Login</a>
+        <a href="/sign-up" class="nav-signup-btn">Sign up</a>
       <% } %>
     </div>
   </nav>
@@ -25,6 +30,19 @@
   <main class="container">
     <%- body %>
   </main>
+
+  <script>
+    (function() {
+      var toggle = document.getElementById('navToggle');
+      var links = document.getElementById('navLinks');
+      if (toggle && links) {
+        toggle.addEventListener('click', function() {
+          links.classList.toggle('open');
+          toggle.classList.toggle('active');
+        });
+      }
+    })();
+  </script>
 
   <% if (typeof clerkPublishableKey !== 'undefined' && clerkPublishableKey) { %>
   <script

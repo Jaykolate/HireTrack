@@ -2,35 +2,30 @@
 
 <div class="stats-grid">
   <div class="stat-card stat-total">
-    <div class="stat-icon">📋</div>
     <div>
       <p class="stat-label">Total applications</p>
       <p class="stat-value"><%= total %></p>
     </div>
   </div>
   <div class="stat-card stat-applied">
-    <div class="stat-icon">📨</div>
     <div>
       <p class="stat-label">Applied</p>
       <p class="stat-value"><%= stats.Applied %></p>
     </div>
   </div>
   <div class="stat-card stat-interview">
-    <div class="stat-icon">🎤</div>
     <div>
       <p class="stat-label">Interview</p>
       <p class="stat-value"><%= stats.Interview %></p>
     </div>
   </div>
   <div class="stat-card stat-offer">
-    <div class="stat-icon">🎉</div>
     <div>
       <p class="stat-label">Offers</p>
       <p class="stat-value"><%= stats.Offer %></p>
     </div>
   </div>
   <div class="stat-card stat-rejected">
-    <div class="stat-icon">✖️</div>
     <div>
       <p class="stat-label">Rejected</p>
       <p class="stat-value"><%= stats.Rejected %></p>
@@ -40,15 +35,23 @@
 
 <div class="table-header">
   <h2>Applications</h2>
-  <a href="/applications/new" class="btn">+ Add new</a>
+  <% if (typeof userName !== 'undefined' && userName) { %>
+    <a href="/applications/new" class="btn">+ Add new</a>
+  <% } else { %>
+    <button type="button" class="btn" onclick="showLoginWarning()">+ Add new</button>
+  <% } %>
 </div>
 
 <% if (applications.length === 0) { %>
   <div class="empty-state">
-    <div class="empty-state-icon">📂</div>
     <p class="empty-state-title">No applications yet</p>
-    <p class="empty-state-text">Start tracking your job search by adding your first application.</p>
-    <a href="/applications/new" class="btn">+ Add your first application</a>
+    <% if (typeof userName !== 'undefined' && userName) { %>
+      <p class="empty-state-text">Start tracking your job search by adding your first application.</p>
+      <a href="/applications/new" class="btn">+ Add your first application</a>
+    <% } else { %>
+      <p class="empty-state-text">Sign in to start tracking your job applications.</p>
+      <button type="button" class="btn" onclick="showLoginWarning()">+ Add your first application</button>
+    <% } %>
   </div>
 <% } else { %>
 <table class="app-table">
@@ -58,17 +61,26 @@
       <th>Role</th>
       <th>Applied date</th>
       <th>Status</th>
+      <th>Resume</th>
       <th>Actions</th>
     </tr>
   </thead>
   <tbody>
     <% applications.forEach(app => { %>
       <tr>
-        <td><%= app.company_name %></td>
-        <td><%= app.role_title %></td>
-        <td><%= new Date(app.applied_date).toLocaleDateString() %></td>
-        <td><span class="badge badge-<%= app.status.toLowerCase() %>"><%= app.status %></span></td>
+        <td data-label="Company"><%= app.company_name %></td>
+        <td data-label="Role"><%= app.role_title %></td>
+        <td data-label="Date"><%= new Date(app.applied_date).toLocaleDateString() %></td>
+        <td data-label="Status"><span class="badge badge-<%= app.status.toLowerCase() %>"><%= app.status %></span></td>
+        <td data-label="Resume">
+          <% if (app.resume_file_url) { %>
+            <a href="<%= app.resume_file_url %>" target="_blank" class="resume-indicator" title="View resume">PDF</a>
+          <% } else { %>
+            <span class="resume-none">—</span>
+          <% } %>
+        </td>
         <td class="actions">
+          <a href="/applications/<%= app.id %>/details">View</a>
           <a href="/applications/<%= app.id %>">Edit</a>
           <form action="/applications/<%= app.id %>?_method=DELETE" method="POST" onsubmit="return confirm('Delete this application?')">
             <button type="submit" class="link-btn">Delete</button>
@@ -79,3 +91,39 @@
   </tbody>
 </table>
 <% } %>
+
+<!-- Login Warning Modal -->
+<div class="login-modal-overlay" id="loginModal">
+  <div class="login-modal">
+    <button class="login-modal-close" id="closeLoginModal" title="Close">&times;</button>
+    <h3 class="login-modal-title">Login Required</h3>
+    <p class="login-modal-text">Please sign in before you can create or manage job applications.</p>
+    <div class="login-modal-actions">
+      <a href="/sign-in" class="btn login-modal-btn-primary">Sign in</a>
+      <a href="/sign-up" class="btn btn-outline login-modal-btn-secondary">Create account</a>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showLoginWarning() {
+    var modal = document.getElementById('loginModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function hideLoginWarning() {
+    var modal = document.getElementById('loginModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  document.getElementById('closeLoginModal').addEventListener('click', hideLoginWarning);
+  document.getElementById('loginModal').addEventListener('click', function(e) {
+    if (e.target === this) hideLoginWarning();
+  });
+
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') hideLoginWarning();
+  });
+</script>
