@@ -1,6 +1,5 @@
 -- schema.sql
-CREATE DATABASE IF NOT EXISTS hiretrack;
-USE hiretrack;
+
 
 CREATE TABLE applications (
   id INT AUTO_INCREMENT PRIMARY KEY,

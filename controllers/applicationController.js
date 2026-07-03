@@ -67,7 +67,8 @@ exports.getDashboard = async (req, res) => {
       return res.render('dashboard', {
         applications: [],
         stats: { Applied: 0, Interview: 0, Offer: 0, Rejected: 0 },
-        total: 0
+        total: 0,
+        timeline: []
       });
     }
 
@@ -83,13 +84,22 @@ exports.getDashboard = async (req, res) => {
       GROUP BY status
     `, [userId]);
 
+    const [timeline] = await pool.query(`
+      SELECT DATE_FORMAT(applied_date, '%Y-%m') as month, COUNT(*) as count
+      FROM applications
+      WHERE user_id = ?
+      GROUP BY month
+      ORDER BY month ASC
+    `, [userId]);
+
     const statsMap = { Applied: 0, Interview: 0, Offer: 0, Rejected: 0 };
     stats.forEach(row => { statsMap[row.status] = row.count; });
 
     res.render('dashboard', {
       applications,
       stats: statsMap,
-      total: applications.length
+      total: applications.length,
+      timeline
     });
   } catch (err) {
     console.error(err);

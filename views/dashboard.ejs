@@ -33,6 +33,24 @@
   </div>
 </div>
 
+<% if (applications.length > 0) { %>
+<div class="analytics-section">
+  <div class="chart-card">
+    <h3 class="chart-title">Status Breakdown</h3>
+    <div class="chart-wrapper">
+      <canvas id="statusChart"></canvas>
+    </div>
+  </div>
+  <div class="chart-card">
+    <h3 class="chart-title">Applications Over Time</h3>
+    <div class="chart-wrapper">
+      <canvas id="timelineChart"></canvas>
+    </div>
+  </div>
+</div>
+<% } %>
+
+
 <div class="table-header">
   <h2>Applications</h2>
   <% if (typeof userName !== 'undefined' && userName) { %>
@@ -127,3 +145,93 @@
     if (e.key === 'Escape') hideLoginWarning();
   });
 </script>
+
+<% if (applications.length > 0) { %>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  (function() {
+    const stats = <%- JSON.stringify(stats) %>;
+    const timelineData = <%- JSON.stringify(timeline) %>;
+
+    if (document.getElementById('statusChart')) {
+      const ctxStatus = document.getElementById('statusChart').getContext('2d');
+      new Chart(ctxStatus, {
+        type: 'doughnut',
+        data: {
+          labels: ['Applied', 'Interview', 'Offer', 'Rejected'],
+          datasets: [{
+            data: [stats.Applied, stats.Interview, stats.Offer, stats.Rejected],
+            backgroundColor: ['#9ca3af', '#3b82f6', '#10b981', '#ef4444'],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              position: 'bottom',
+              labels: {
+                boxWidth: 12,
+                font: {
+                  size: 12
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+
+    if (document.getElementById('timelineChart')) {
+      const ctxTimeline = document.getElementById('timelineChart').getContext('2d');
+      const labels = timelineData.map(item => {
+        const parts = item.month.split('-');
+        const year = parseInt(parts[0], 10);
+        const month = parseInt(parts[1], 10);
+        const date = new Date(year, month - 1);
+        return date.toLocaleDateString(undefined, { month: 'short', year: 'numeric' });
+      });
+      const counts = timelineData.map(item => item.count);
+
+      new Chart(ctxTimeline, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: 'Applications',
+            data: counts,
+            backgroundColor: '#2563eb',
+            borderRadius: 4
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              },
+              grid: {
+                color: '#e5e7eb'
+              }
+            },
+            x: {
+              grid: {
+                display: false
+              }
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+    }
+  })();
+</script>
+<% } %>
