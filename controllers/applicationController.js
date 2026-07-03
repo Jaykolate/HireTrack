@@ -45,18 +45,46 @@ function validateApplication(body) {
   return errors;
 }
 
-// Helper: delete a local resume file
-function deleteLocalFile(fileUrl) {
+const { put, del } = require('@vercel/blob');
+
+// Helper: delete a resume file (local or cloud)
+async function deleteResumeFile(fileUrl) {
   if (!fileUrl) return;
   try {
-    const filePath = path.join(__dirname, '..', 'public', fileUrl);
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
+    if (fileUrl.startsWith('http') || fileUrl.includes('vercel-storage.com')) {
+      await del(fileUrl);
+    } else {
+      const filePath = path.join(__dirname, '..', 'public', fileUrl);
+      if (fs.existsSync(filePath)) {
+        fs.unlinkSync(filePath);
+      }
     }
   } catch (err) {
     console.error('File delete error:', err.message);
   }
 }
+
+// Helper: upload a resume file (local or cloud)
+async function uploadResumeFile(file) {
+  if (!file) return null;
+
+  if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blob = await put(file.originalname, file.buffer, { access: 'public' });
+    return blob.url;
+  } else {
+    const filename = Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
+    const localDir = path.join(__dirname, '..', 'public', 'uploads', 'resumes');
+    
+    if (!fs.existsSync(localDir)) {
+      fs.mkdirSync(localDir, { recursive: true });
+    }
+    
+    const filePath = path.join(localDir, filename);
+    fs.writeFileSync(filePath, file.buffer);
+    return '/uploads/resumes/' + filename;
+  }
+}
+
 
 // GET all applications + stats for dashboard
 exports.getDashboard = async (req, res) => {
@@ -159,7 +187,7 @@ exports.createApplication = async (req, res) => {
 
     if (req.file) {
       resumeFileName = req.file.originalname;
-      resumeFileUrl = '/uploads/resumes/' + req.file.filename;
+      resumeFileUrl = await uploadResumeFile(req.file);
       resumeUploadedAt = new Date();
     }
 
@@ -210,7 +238,7 @@ exports.updateApplication = async (req, res) => {
 
     // Handle resume removal
     if (remove_resume === 'on') {
-      deleteLocalFile(current[0].resume_file_url);
+      await deleteResumeFile(current[0].resume_file_url);
       resumeFileName = null;
       resumeFileUrl = null;
       resumeUploadedAt = null;
@@ -219,10 +247,10 @@ exports.updateApplication = async (req, res) => {
     // Handle new resume upload (replaces existing if any)
     if (req.file) {
       if (current[0].resume_file_url) {
-        deleteLocalFile(current[0].resume_file_url);
+        await deleteResumeFile(current[0].resume_file_url);
       }
       resumeFileName = req.file.originalname;
-      resumeFileUrl = '/uploads/resumes/' + req.file.filename;
+      resumeFileUrl = await uploadResumeFile(req.file);
       resumeUploadedAt = new Date();
     }
 
@@ -252,7 +280,7 @@ exports.deleteApplication = async (req, res) => {
       [req.params.id, userId]
     );
     if (rows.length > 0 && rows[0].resume_file_url) {
-      deleteLocalFile(rows[0].resume_file_url);
+      await deleteResumeFile(rows[0].resume_file_url);
     }
 
     await pool.query(
