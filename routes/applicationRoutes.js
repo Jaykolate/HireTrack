@@ -1,11 +1,10 @@
-
+// routes/applicationRoutes.js
 const express = require('express');
 const router = express.Router();
 const { getAuth } = require('@clerk/express');
 const controller = require('../controllers/applicationController');
-const upload = require('../config/upload');
 
-// Custom auth guard using getAuth() instead of deprecated requireAuth()
+// Custom auth guard using getAuth()
 function requireAuthCustom(req, res, next) {
   const { userId } = getAuth(req);
   if (!userId) {
@@ -14,27 +13,15 @@ function requireAuthCustom(req, res, next) {
   next();
 }
 
-// Multer error handler middleware
-function handleUploadError(err, req, res, next) {
-  if (err) {
-    const message = err.message || 'File upload failed.';
-    return res.status(400).render('add', {
-      errors: [message],
-      formData: req.body || {}
-    });
-  }
-  next();
-}
-
 // Public — dashboard visible to everyone
 router.get('/', controller.getDashboard);
 
-// Protected — require login for creating, editing, deleting
-router.get('/applications/new', requireAuthCustom, (req, res) => res.render('add'));
+// Protected — require login for creating, editing, deleting applications
+router.get('/applications/new', requireAuthCustom, controller.renderAddForm);
 router.get('/applications/:id/details', requireAuthCustom, controller.getApplicationDetails);
 router.get('/applications/:id', requireAuthCustom, controller.getApplication);
-router.post('/applications', requireAuthCustom, upload.single('resume'), handleUploadError, controller.createApplication);
-router.put('/applications/:id', requireAuthCustom, upload.single('resume'), handleUploadError, controller.updateApplication);
+router.post('/applications', requireAuthCustom, controller.createApplication);
+router.put('/applications/:id', requireAuthCustom, controller.updateApplication);
 router.delete('/applications/:id', requireAuthCustom, controller.deleteApplication);
 
 module.exports = router;

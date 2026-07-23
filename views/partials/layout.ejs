@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HireTrack</title>
+  <title>HireTrack — Application & Resume Manager</title>
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -15,6 +15,7 @@
     <div class="nav-links" id="navLinks">
       <a href="/">Dashboard</a>
       <% if (typeof userName !== 'undefined' && userName) { %>
+        <a href="/resumes">Resumes</a>
         <a href="/applications/new">Add new</a>
         <div class="nav-user-section">
           <span class="nav-user"><%= userName %></span>
@@ -31,6 +32,8 @@
     <%- body %>
   </main>
 
+  <div id="toast-container" class="toast-container"></div>
+
   <script>
     (function() {
       var toggle = document.getElementById('navToggle');
@@ -42,6 +45,18 @@
         });
       }
     })();
+
+    function showToast(message, type = 'info') {
+      const container = document.getElementById('toast-container');
+      if (!container) return;
+      const toast = document.createElement('div');
+      toast.className = `toast toast-${type}`;
+      toast.innerHTML = `<span>${message}</span><button onclick="this.parentElement.remove()">&times;</button>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        if (toast.parentElement) toast.remove();
+      }, 4000);
+    }
   </script>
 
   <% if (typeof clerkPublishableKey !== 'undefined' && clerkPublishableKey) { %>
