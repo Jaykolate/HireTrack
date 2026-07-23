@@ -37,20 +37,30 @@
 
     <!-- Resume Section -->
     <div class="details-resume-section">
-      <h2 class="details-section-title">Resume</h2>
-      <% if (application.resume_file_url) { %>
+      <h2 class="details-section-title">Attached Resume</h2>
+      <% if (application.resume_title) { %>
+        <div class="resume-card">
+          <div class="resume-card-icon">📄</div>
+          <div class="resume-card-info">
+            <p class="resume-card-name"><%= application.resume_title %> <span class="badge badge-version"><%= application.resume_version %></span></p>
+            <p class="resume-card-date">Linked Resume Version</p>
+          </div>
+          <div class="resume-card-actions">
+            <a href="<%= application.resume_path %>" target="_blank" class="btn btn-outline" id="view-resume-btn">
+              <span class="btn-icon">👁</span> View / Download
+            </a>
+          </div>
+        </div>
+      <% } else if (application.resume_file_url) { %>
         <div class="resume-card">
           <div class="resume-card-icon">📄</div>
           <div class="resume-card-info">
             <p class="resume-card-name"><%= application.resume_file_name %></p>
-            <p class="resume-card-date">Uploaded on <%= new Date(application.resume_uploaded_at).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }) %></p>
+            <p class="resume-card-date">Legacy Upload</p>
           </div>
           <div class="resume-card-actions">
             <a href="<%= application.resume_file_url %>" target="_blank" class="btn btn-outline" id="view-resume-btn">
               <span class="btn-icon">👁</span> View Resume
-            </a>
-            <a href="<%= application.resume_file_url %>" download="<%= application.resume_file_name %>" class="btn" id="download-resume-btn">
-              <span class="btn-icon">⬇</span> Download Resume
             </a>
           </div>
         </div>

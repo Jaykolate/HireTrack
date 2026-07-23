@@ -1,0 +1,92 @@
+<a href="/resumes" class="back-link">← Back to Resumes</a>
+
+<div class="table-header flex-header margin-bottom">
+  <div>
+    <h1><%= resume.title %> <span class="badge badge-version"><%= resume.version %></span></h1>
+    <p class="subtitle">Uploaded on <%= new Date(resume.created_at).toLocaleDateString() %></p>
+  </div>
+  <a href="<%= resume.file_path %>" target="_blank" class="btn">
+    Download PDF
+  </a>
+</div>
+
+<!-- Performance Statistics -->
+<div class="table-header margin-top">
+  <h2>Performance Statistics</h2>
+</div>
+
+<div class="stats-grid margin-bottom">
+  <div class="stat-card stat-total">
+    <div>
+      <p class="stat-label">Total applications</p>
+      <p class="stat-value"><%= stats.total %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-interview">
+    <div>
+      <p class="stat-label">Interviews</p>
+      <p class="stat-value"><%= stats.interview %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-offer">
+    <div>
+      <p class="stat-label">Offers</p>
+      <p class="stat-value"><%= stats.offer %></p>
+    </div>
+  </div>
+  <div class="stat-card stat-rejected">
+    <div>
+      <p class="stat-label">Rejected</p>
+      <p class="stat-value"><%= stats.rejected %></p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <p class="stat-label">Success rate</p>
+      <p class="stat-value text-accent"><%= stats.success_rate %>%</p>
+    </div>
+  </div>
+</div>
+
+<!-- Applications Using This Resume -->
+<div class="table-header margin-top">
+  <h2>Applications Using This Resume</h2>
+</div>
+
+<% if (applications.length === 0) { %>
+  <div class="empty-state">
+    <p class="empty-state-title">No applications linked</p>
+    <p class="empty-state-text">This resume version is not linked to any job application yet.</p>
+    <a href="/applications/new" class="btn">+ Create application with this resume</a>
+  </div>
+<% } else { %>
+  <table class="app-table">
+    <thead>
+      <tr>
+        <th>Company</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Applied date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% applications.forEach(app => { %>
+        <tr>
+          <td data-label="Company"><%= app.company_name %></td>
+          <td data-label="Role"><%= app.role_title %></td>
+          <td data-label="Status">
+            <span class="badge badge-<%= app.status.toLowerCase() %>">
+              <%= app.status %>
+            </span>
+          </td>
+          <td data-label="Date"><%= new Date(app.applied_date).toLocaleDateString() %></td>
+          <td data-label="Actions" class="actions">
+            <a href="/applications/<%= app.id %>/details">View</a>
+            <a href="/applications/<%= app.id %>">Edit</a>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>

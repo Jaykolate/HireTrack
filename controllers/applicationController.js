@@ -3,6 +3,7 @@ const pool = require('../config/db');
 const { getAuth } = require('@clerk/express');
 const path = require('path');
 const fs = require('fs');
+const resumeModel = require('../models/resumeModel');
 
 const VALID_STATUSES = ['Applied', 'Interview', 'Offer', 'Rejected'];
 
@@ -45,47 +46,6 @@ function validateApplication(body) {
   return errors;
 }
 
-const { put, del } = require('@vercel/blob');
-
-// Helper: delete a resume file (local or cloud)
-async function deleteResumeFile(fileUrl) {
-  if (!fileUrl) return;
-  try {
-    if (fileUrl.startsWith('http') || fileUrl.includes('vercel-storage.com')) {
-      await del(fileUrl);
-    } else {
-      const filePath = path.join(__dirname, '..', 'public', fileUrl);
-      if (fs.existsSync(filePath)) {
-        fs.unlinkSync(filePath);
-      }
-    }
-  } catch (err) {
-    console.error('File delete error:', err.message);
-  }
-}
-
-// Helper: upload a resume file (local or cloud)
-async function uploadResumeFile(file) {
-  if (!file) return null;
-
-  if (process.env.BLOB_READ_WRITE_TOKEN) {
-    const blob = await put(file.originalname, file.buffer, { access: 'public' });
-    return blob.url;
-  } else {
-    const filename = Date.now() + '-' + file.originalname.replace(/\s+/g, '_');
-    const localDir = path.join(__dirname, '..', 'public', 'uploads', 'resumes');
-    
-    if (!fs.existsSync(localDir)) {
-      fs.mkdirSync(localDir, { recursive: true });
-    }
-    
-    const filePath = path.join(localDir, filename);
-    fs.writeFileSync(filePath, file.buffer);
-    return '/uploads/resumes/' + filename;
-  }
-}
-
-
 // GET all applications + stats for dashboard
 exports.getDashboard = async (req, res) => {
   try {
@@ -101,7 +61,11 @@ exports.getDashboard = async (req, res) => {
     }
 
     const [applications] = await pool.query(
-      'SELECT * FROM applications WHERE user_id = ? ORDER BY applied_date DESC',
+      `SELECT a.*, r.title as resume_title, r.version as resume_version, r.file_path as resume_path, r.id as resume_id_ref
+       FROM applications a
+       LEFT JOIN resumes r ON a.resume_id = r.id
+       WHERE a.user_id = ?
+       ORDER BY a.applied_date DESC`,
       [userId]
     );
 
@@ -140,7 +104,10 @@ exports.getApplicationDetails = async (req, res) => {
   try {
     const { userId } = getAuth(req);
     const [rows] = await pool.query(
-      'SELECT * FROM applications WHERE id = ? AND user_id = ?',
+      `SELECT a.*, r.title as resume_title, r.version as resume_version, r.file_path as resume_path
+       FROM applications a
+       LEFT JOIN resumes r ON a.resume_id = r.id
+       WHERE a.id = ? AND a.user_id = ?`,
       [req.params.id, userId]
     );
     if (rows.length === 0) return res.status(404).send('Not found');
@@ -156,11 +123,28 @@ exports.getApplication = async (req, res) => {
   try {
     const { userId } = getAuth(req);
     const [rows] = await pool.query(
-      'SELECT * FROM applications WHERE id = ? AND user_id = ?',
+      `SELECT a.*, r.title as resume_title, r.version as resume_version
+       FROM applications a
+       LEFT JOIN resumes r ON a.resume_id = r.id
+       WHERE a.id = ? AND a.user_id = ?`,
       [req.params.id, userId]
     );
     if (rows.length === 0) return res.status(404).send('Not found');
-    res.render('edit', { application: rows[0] });
+
+    const resumes = await resumeModel.getUserResumes(userId);
+    res.render('edit', { application: rows[0], resumes });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server error');
+  }
+};
+
+// GET new application form
+exports.renderAddForm = async (req, res) => {
+  try {
+    const { userId } = getAuth(req);
+    const resumes = await resumeModel.getUserResumes(userId);
+    res.render('add', { resumes });
   } catch (err) {
     console.error(err);
     res.status(500).send('Server error');
@@ -171,33 +155,27 @@ exports.getApplication = async (req, res) => {
 exports.createApplication = async (req, res) => {
   try {
     const { userId } = getAuth(req);
-    const { company_name, role_title, status, applied_date, notes } = req.body;
+    const { company_name, role_title, status, applied_date, notes, resume_id } = req.body;
     const errors = validateApplication(req.body);
 
     if (errors.length > 0) {
+      const resumes = await resumeModel.getUserResumes(userId);
       return res.status(400).render('add', {
         errors,
-        formData: { company_name, role_title, status, applied_date, notes }
+        resumes,
+        formData: { company_name, role_title, status, applied_date, notes, resume_id }
       });
     }
 
-    let resumeFileName = null;
-    let resumeFileUrl = null;
-    let resumeUploadedAt = null;
-
-    if (req.file) {
-      resumeFileName = req.file.originalname;
-      resumeFileUrl = await uploadResumeFile(req.file);
-      resumeUploadedAt = new Date();
-    }
+    const selectedResumeId = resume_id && !isNaN(parseInt(resume_id)) ? parseInt(resume_id) : null;
 
     await pool.query(
       `INSERT INTO applications
-       (user_id, company_name, role_title, status, applied_date, notes, resume_file_name, resume_file_url, resume_uploaded_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      [userId, company_name.trim(), role_title.trim(), status, applied_date, notes,
-       resumeFileName, resumeFileUrl, resumeUploadedAt]
+       (user_id, company_name, role_title, status, applied_date, notes, resume_id)
+       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+      [userId, company_name.trim(), role_title.trim(), status, applied_date, notes, selectedResumeId]
     );
+
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -209,7 +187,7 @@ exports.createApplication = async (req, res) => {
 exports.updateApplication = async (req, res) => {
   try {
     const { userId } = getAuth(req);
-    const { company_name, role_title, status, applied_date, notes, remove_resume } = req.body;
+    const { company_name, role_title, status, applied_date, notes, resume_id, remove_resume } = req.body;
     const errors = validateApplication(req.body);
 
     if (errors.length > 0) {
@@ -219,50 +197,27 @@ exports.updateApplication = async (req, res) => {
       );
       if (rows.length === 0) return res.status(404).send('Not found');
 
+      const resumes = await resumeModel.getUserResumes(userId);
       return res.status(400).render('edit', {
         errors,
+        resumes,
         application: rows[0],
-        formData: { company_name, role_title, status, applied_date, notes }
+        formData: { company_name, role_title, status, applied_date, notes, resume_id }
       });
     }
 
-    const [current] = await pool.query(
-      'SELECT * FROM applications WHERE id = ? AND user_id = ?',
-      [req.params.id, userId]
-    );
-    if (current.length === 0) return res.status(404).send('Not found');
-
-    let resumeFileName = current[0].resume_file_name;
-    let resumeFileUrl = current[0].resume_file_url;
-    let resumeUploadedAt = current[0].resume_uploaded_at;
-
-    // Handle resume removal
+    let selectedResumeId = resume_id && !isNaN(parseInt(resume_id)) ? parseInt(resume_id) : null;
     if (remove_resume === 'on') {
-      await deleteResumeFile(current[0].resume_file_url);
-      resumeFileName = null;
-      resumeFileUrl = null;
-      resumeUploadedAt = null;
-    }
-
-    // Handle new resume upload (replaces existing if any)
-    if (req.file) {
-      if (current[0].resume_file_url) {
-        await deleteResumeFile(current[0].resume_file_url);
-      }
-      resumeFileName = req.file.originalname;
-      resumeFileUrl = await uploadResumeFile(req.file);
-      resumeUploadedAt = new Date();
+      selectedResumeId = null;
     }
 
     await pool.query(
       `UPDATE applications
-       SET company_name = ?, role_title = ?, status = ?, applied_date = ?, notes = ?,
-           resume_file_name = ?, resume_file_url = ?, resume_uploaded_at = ?
+       SET company_name = ?, role_title = ?, status = ?, applied_date = ?, notes = ?, resume_id = ?
        WHERE id = ? AND user_id = ?`,
-      [company_name.trim(), role_title.trim(), status, applied_date, notes,
-       resumeFileName, resumeFileUrl, resumeUploadedAt,
-       req.params.id, userId]
+      [company_name.trim(), role_title.trim(), status, applied_date, notes, selectedResumeId, req.params.id, userId]
     );
+
     res.redirect('/');
   } catch (err) {
     console.error(err);
@@ -274,14 +229,6 @@ exports.updateApplication = async (req, res) => {
 exports.deleteApplication = async (req, res) => {
   try {
     const { userId } = getAuth(req);
-
-    const [rows] = await pool.query(
-      'SELECT resume_file_url FROM applications WHERE id = ? AND user_id = ?',
-      [req.params.id, userId]
-    );
-    if (rows.length > 0 && rows[0].resume_file_url) {
-      await deleteResumeFile(rows[0].resume_file_url);
-    }
 
     await pool.query(
       'DELETE FROM applications WHERE id = ? AND user_id = ?',

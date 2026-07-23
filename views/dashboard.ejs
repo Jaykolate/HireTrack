@@ -79,7 +79,7 @@
       <th>Role</th>
       <th>Applied date</th>
       <th>Status</th>
-      <th>Resume</th>
+      <th>Resume Version</th>
       <th>Actions</th>
     </tr>
   </thead>
@@ -90,9 +90,13 @@
         <td data-label="Role"><%= app.role_title %></td>
         <td data-label="Date"><%= new Date(app.applied_date).toLocaleDateString() %></td>
         <td data-label="Status"><span class="badge badge-<%= app.status.toLowerCase() %>"><%= app.status %></span></td>
-        <td data-label="Resume">
-          <% if (app.resume_file_url) { %>
-            <a href="<%= app.resume_file_url %>" target="_blank" class="resume-indicator" title="View resume">PDF</a>
+        <td data-label="Resume Version">
+          <% if (app.resume_title) { %>
+            <a href="<%= app.resume_path %>" target="_blank" class="resume-version-badge" title="View/Download <%= app.resume_title %> (<%= app.resume_version %>)">
+              📎 <%= app.resume_title %> <span class="v-pill"><%= app.resume_version %></span>
+            </a>
+          <% } else if (app.resume_file_url) { %>
+            <a href="<%= app.resume_file_url %>" target="_blank" class="resume-indicator" title="View legacy resume">PDF</a>
           <% } else { %>
             <span class="resume-none">—</span>
           <% } %>

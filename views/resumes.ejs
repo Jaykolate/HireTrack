@@ -1,0 +1,235 @@
+<div class="table-header flex-header margin-bottom">
+  <div>
+    <h1>Resume Version Management</h1>
+    <p class="subtitle">Manage multiple versions of your resume and track performance across applications</p>
+  </div>
+  <button class="btn" onclick="openUploadModal()">+ Upload New Resume</button>
+</div>
+
+<!-- Stats Summary -->
+<div class="stats-grid">
+  <div class="stat-card">
+    <div>
+      <p class="stat-label">Total resume versions</p>
+      <p class="stat-value"><%= totalResumes %></p>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <p class="stat-label">Highest success rate</p>
+      <p class="stat-value"><%= topResume ? topResume.success_rate + '%' : '0.0%' %></p>
+      <% if (topResume) { %>
+        <p class="stat-subtext"><%= topResume.title %> (<%= topResume.version %>)</p>
+      <% } %>
+    </div>
+  </div>
+  <div class="stat-card">
+    <div>
+      <p class="stat-label">Applications linked</p>
+      <p class="stat-value"><%= resumes.reduce((acc, r) => acc + r.total_applications, 0) %></p>
+    </div>
+  </div>
+</div>
+
+<!-- Resumes Table / Grid -->
+<% if (resumes.length === 0) { %>
+  <div class="empty-state">
+    <p class="empty-state-title">No resumes uploaded yet</p>
+    <p class="empty-state-text">Upload different versions of your resume (e.g., Frontend, Backend, Fullstack) to track which ones perform best.</p>
+    <button class="btn" onclick="openUploadModal()">+ Upload your first resume</button>
+  </div>
+<% } else { %>
+  <table class="app-table margin-top">
+    <thead>
+      <tr>
+        <th>Resume Title</th>
+        <th>Version</th>
+        <th>Upload Date</th>
+        <th>Performance</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% resumes.forEach(r => { %>
+        <tr>
+          <td data-label="Resume Title">
+            <a href="/resumes/<%= r.id %>/details" class="resume-title-link">
+              <%= r.title %>
+            </a>
+          </td>
+          <td data-label="Version"><span class="badge badge-version"><%= r.version %></span></td>
+          <td data-label="Upload Date"><%= new Date(r.created_at).toLocaleDateString() %></td>
+          <td data-label="Performance">
+            <div class="analytics-pill-group">
+              <span class="mini-stat">Apps: <strong><%= r.total_applications %></strong></span>
+              <span class="mini-stat">Int: <strong><%= r.interview_count %></strong></span>
+              <span class="mini-stat">Off: <strong><%= r.offer_count %></strong></span>
+              <span class="mini-stat">Rej: <strong><%= r.rejected_count %></strong></span>
+              <span class="rate-tag">Success: <strong><%= r.success_rate %>%</strong></span>
+            </div>
+          </td>
+          <td data-label="Actions" class="actions">
+            <a href="<%= r.file_path %>" target="_blank">View</a>
+            <a href="/resumes/<%= r.id %>/details">Details</a>
+            <button type="button" class="link-btn" onclick="openEditModal(<%= r.id %>, '<%= r.title %>', '<%= r.version %>')">Edit</button>
+            <button type="button" class="link-btn text-danger-btn" onclick="deleteResume(<%= r.id %>, '<%= r.title %>')">Delete</button>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>
+
+<!-- Upload Resume Modal -->
+<div id="uploadModal" class="login-modal-overlay">
+  <div class="login-modal modal-form-card">
+    <button class="login-modal-close" onclick="closeUploadModal()">&times;</button>
+    <h3 class="login-modal-title">Upload New Resume</h3>
+    <form id="uploadForm" onsubmit="handleUploadSubmit(event)" class="modal-form">
+      <div class="form-field">
+        <label for="uploadTitle">Resume Title <span class="required">*</span></label>
+        <input type="text" id="uploadTitle" name="title" placeholder="e.g. Backend Engineer, Full Stack" required maxLength="100">
+      </div>
+      <div class="form-field">
+        <label for="uploadVersion">Version <span class="required">*</span></label>
+        <input type="text" id="uploadVersion" name="version" placeholder="e.g. v1, v2, 2026-Q1" required maxLength="50">
+      </div>
+      <div class="form-field">
+        <label for="uploadFile">PDF File <span class="required">*</span> (Max 5MB)</label>
+        <input type="file" id="uploadFile" name="pdf" accept="application/pdf" required>
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeUploadModal()">Cancel</button>
+        <button type="submit" id="uploadSubmitBtn" class="btn">Upload Resume</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Resume Modal -->
+<div id="editModal" class="login-modal-overlay">
+  <div class="login-modal modal-form-card">
+    <button class="login-modal-close" onclick="closeEditModal()">&times;</button>
+    <h3 class="login-modal-title">Edit Resume Details</h3>
+    <form id="editForm" onsubmit="handleEditSubmit(event)" class="modal-form">
+      <input type="hidden" id="editResumeId" name="id">
+      <div class="form-field">
+        <label for="editTitle">Resume Title <span class="required">*</span></label>
+        <input type="text" id="editTitle" name="title" required maxLength="100">
+      </div>
+      <div class="form-field">
+        <label for="editVersion">Version <span class="required">*</span></label>
+        <input type="text" id="editVersion" name="version" required maxLength="50">
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" onclick="closeEditModal()">Cancel</button>
+        <button type="submit" id="editSubmitBtn" class="btn">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openUploadModal() {
+    var modal = document.getElementById('uploadModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeUploadModal() {
+    var modal = document.getElementById('uploadModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    document.getElementById('uploadForm').reset();
+  }
+
+  function openEditModal(id, title, version) {
+    document.getElementById('editResumeId').value = id;
+    document.getElementById('editTitle').value = title;
+    document.getElementById('editVersion').value = version;
+    var modal = document.getElementById('editModal');
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeEditModal() {
+    var modal = document.getElementById('editModal');
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  async function handleUploadSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('uploadSubmitBtn');
+    btn.disabled = true;
+    btn.innerText = 'Uploading...';
+
+    const formData = new FormData(e.target);
+    try {
+      const res = await fetch('/api/resumes', {
+        method: 'POST',
+        body: formData
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        showToast(data.error || 'Failed to upload resume', 'error');
+      } else {
+        showToast('Resume uploaded successfully!', 'success');
+        closeUploadModal();
+        setTimeout(() => window.location.reload(), 600);
+      }
+    } catch (err) {
+      showToast('Network error during upload', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerText = 'Upload Resume';
+    }
+  }
+
+  async function handleEditSubmit(e) {
+    e.preventDefault();
+    const id = document.getElementById('editResumeId').value;
+    const title = document.getElementById('editTitle').value;
+    const version = document.getElementById('editVersion').value;
+    const btn = document.getElementById('editSubmitBtn');
+
+    btn.disabled = true;
+    btn.innerText = 'Saving...';
+
+    try {
+      const res = await fetch(`/api/resumes/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title, version })
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        showToast(data.error || 'Failed to update resume', 'error');
+      } else {
+        showToast('Resume updated successfully!', 'success');
+        closeEditModal();
+        setTimeout(() => window.location.reload(), 600);
+      }
+    } catch (err) {
+      showToast('Network error during update', 'error');
+    } finally {
+      btn.disabled = false;
+      btn.innerText = 'Save Changes';
+    }
+  }
+
+  async function deleteResume(id, title) {
+    if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
+
+    try {
+      const res = await fetch(`/api/resumes/${id}`, { method: 'DELETE' });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        showToast(data.error || 'Failed to delete resume', 'error');
+      } else {
+        showToast('Resume deleted successfully', 'success');
+        setTimeout(() => window.location.reload(), 600);
+      }
+    } catch (err) {
+      showToast('Network error during deletion', 'error');
+    }
+  }
+</script>
